@@ -24,11 +24,14 @@ Options:
 """
 from functools import partial
 from time import sleep
+from typing import Dict, Any
+
 import requests
 import twitter
 import json
 import pandas as pd
 import random
+
 from docopt import docopt
 from pathlib import Path
 from enum import Enum
@@ -295,8 +298,9 @@ def save_to_graph(users, friendships, out_path, filtering, edges_ratio=1.0):
     return nodes_path, edges_path
 
 
-def main():
-    options = docopt(__doc__)
+def fetch_data(options: Dict[str, Any] = None):
+    if options is None:
+        options = docopt(__doc__)
     credentials = json.loads(open(options["--credentials"]).read())
     apis = [
         twitter.Api(consumer_key=credential["api_key"],
@@ -335,7 +339,11 @@ def main():
                 serve_http(out_path)
     except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as e:
         print(e)  # Why do I get these?
-        main()  # Retry!
+        fetch_data()  # Retry!
+
+
+def main():
+    fetch_data()
 
 
 if __name__ == "__main__":
