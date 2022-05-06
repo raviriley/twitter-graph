@@ -97,9 +97,9 @@ def fetch_users(apis, target, mode, nodes_to_consider, max_tweets_count, out_pat
                                 api_function=True)
         else:
             raise ValueError("Unknown mode")
-        print("Found {} tweets.".format(len(tweets)))
+        print(f"Found {len(tweets)} tweets.")
         followers = [{**tweet["user"], "query_created_at": tweet["created_at"]} for tweet in tweets]
-        print("Found {} unique authors.".format(len(set(fol["id"] for fol in followers))))
+        print(f'Found {len({fol["id"] for fol in followers})} unique authors.')
         get_or_set(out_path / followers_file, followers, api_function=False)
 
     followers_ids = [user["id"] for user in followers]
@@ -132,7 +132,7 @@ def fetch_users_paged(apis, screen_name, api_func, out_file):
                 print(f"You reached the rate limit. Moving to next api: #{api_idx}")
                 sleep(1)
             else:
-                print("...but it failed. Error: {}".format(e))
+                print(f"...but it failed. Error: {e}")
     get_or_set(out_file, users, force=True, api_function=False)
     return users
 
@@ -180,7 +180,7 @@ def fetch_friendships(friendships, apis, users, excluded, out, target,
                         sleep(15)
                     else:
                         print(f"failed at api: #{api_idx}")
-                        print("...but it failed. Error: {}".format(e))
+                        print(f"...but it failed. Error: {e}")
                         user_friends = []
                         break
                 except (requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout) as e:
@@ -210,7 +210,7 @@ def fetch_tweets(search_query, apis, max_count=1000000):
                 api_idx = (api_idx + 1) % len(apis)
                 print(f"You reached the rate limit. Moving to next api: #{api_idx}")
             else:
-                print("...but it failed. Error: {}".format(e))
+                print(f"...but it failed. Error: {e}")
                 user_friends = [""]
 
         all_tweets.extend(tweets)
@@ -282,7 +282,7 @@ def save_to_graph(users, friendships, out_path, filtering, edges_ratio=1.0):
         elif filtering == "minimum":
             columns_to_export = COLUMNS_TO_EXPORT_MINIMUM
         users_df.to_csv(nodes_path, index_label="Id", columns=columns_to_export)
-    print("Successfully exported {} nodes to {}.".format(users_df.shape[0], nodes_path))
+    print(f"Successfully exported {users_df.shape[0]} nodes to {nodes_path}.")
     print("Start calculated edge")
     edges_df = pd.DataFrame.from_dict(friendships, orient='index')
     if edges_ratio != 1.0:
@@ -291,7 +291,7 @@ def save_to_graph(users, friendships, out_path, filtering, edges_ratio=1.0):
     edges_df.columns = ['Source', 'Target']
     edges_path = out_path / "edges.csv"
     edges_df.to_csv(edges_path, index_label="Id")
-    print("Successfully exported {} edges to {}.".format(edges_df.shape[0], edges_path))
+    print(f"Successfully exported {edges_df.shape[0]} edges to {edges_path}.")
     return nodes_path, edges_path
 
 

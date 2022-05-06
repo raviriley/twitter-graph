@@ -8,8 +8,8 @@ def serve_http(path=None, server_class=HTTPServer, handler_class=SimpleHTTPReque
     if path:
         nodes_path = path / "nodes.csv"
         edges_path = path / "edges.csv"
-        params = "nodes={}&edges={}".format(nodes_path.as_posix(), edges_path.as_posix())
+        params = f"nodes={nodes_path.as_posix()}&edges={edges_path.as_posix()}"
     else:
         params = ""
-    print("Serving HTTP at {}:{}?{}".format(url, port, params))
+    print(f"Serving HTTP at {url}:{port}?{params}")
     httpd.serve_forever()
